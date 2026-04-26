@@ -1,439 +1,1154 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="icons/predio.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity Brooklin — Residências de Alto Padrão no Brooklin</title>
+  <meta name="description" content="Infinity Brooklin: residências privadas de 143 a 187m² no coração do Brooklin. Entrega 2026.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:      #C9A84C;
+      --gold-soft: #E2C87A;
+      --gold-dim:  rgba(201,168,76,.15);
+      --bg-dark:   #07090F;
+      --bg-mid:    #0C1320;
+      --bg-card:   #111827;
+      --text-main: #F0EBE1;
+      --text-muted: #8A8A8A;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: .02em;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+    ::selection { background: var(--gold-dim); color: var(--gold-soft); }
 
-<title>Infinity Brooklin</title>
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
 
-<script src="https://cdn.tailwindcss.com"></script>
+    /* ── ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    /* ── NAV ── */
+    #mainNav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      transition: background .4s, border-color .4s, padding .4s;
+      border-bottom: 1px solid transparent;
+    }
+    #mainNav.scrolled {
+      background: rgba(7,9,15,.92);
+      backdrop-filter: blur(16px);
+      border-color: rgba(201,168,76,.12);
+      padding-top: .75rem;
+      padding-bottom: .75rem;
+    }
+    .nav-link {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      color: rgba(240,235,225,.55);
+      position: relative;
+      transition: color .3s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--gold);
+      transform: scaleX(0); transition: transform .35s cubic-bezier(.16,1,.3,1);
+    }
+    .nav-link:hover { color: var(--text-main); }
+    .nav-link:hover::after { transform: scaleX(1); }
 
-<style>
-body { font-family: 'Montserrat', sans-serif; }
-h1,h2,h3 { font-family: 'Cormorant Garamond', serif; }
-.btnCat {
-  border: 1px solid #555;
-  padding: 8px 16px;
-}
+    /* ── HAMBURGER ── */
+    #hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 6px;
+      z-index: 110;
+    }
+    #hamburger span {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: var(--gold);
+      transition: transform .35s cubic-bezier(.16,1,.3,1), opacity .2s;
+      transform-origin: center;
+    }
+    #hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    #hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    #hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-.btnCat.active {
-  border-color: #C9A84C;
-  color: #C9A84C;
-}
-</style>
+    /* Mobile menu overlay */
+    #mobileMenu {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(7,9,15,.97);
+      backdrop-filter: blur(24px);
+      z-index: 105;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    #mobileMenu.open { display: flex; }
+    #mobileMenu a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      letter-spacing: .12em;
+      color: rgba(240,235,225,.7);
+      transition: color .3s;
+      text-decoration: none;
+    }
+    #mobileMenu a:hover { color: var(--gold); }
+    .mobile-menu-line {
+      width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: .4;
+    }
 
+    /* ── HERO ── */
+    #hero {
+      height: 100svh; min-height: 600px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    #heroVideo {
+      position: absolute; inset: 0;
+      transform: scale(1.12);
+      transition: transform 8s ease-out;
+    }
+    #heroVideo.loaded { transform: scale(1.0); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(7,9,15,.88) 0%,
+        rgba(7,9,15,.55) 55%,
+        rgba(7,9,15,.35) 100%
+      );
+    }
+    .hero-line {
+      position: absolute;
+      top: 0; right: 20%;
+      width: 1px; height: 100%;
+      background: linear-gradient(180deg, transparent, var(--gold) 40%, transparent);
+      opacity: .12;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-family: 'Raleway', sans-serif;
+      font-size: .6rem;
+      letter-spacing: .3em;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,.3);
+      padding: .4rem 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: rgba(12,19,32,.75);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(201,168,76,.18);
+      border-radius: 2px;
+    }
+    .form-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(240,235,225,.12);
+      padding: .85rem 0;
+      font-family: 'Raleway', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .06em;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color .3s;
+    }
+    .form-input::placeholder { color: rgba(240,235,225,.35); }
+    .form-input:focus { border-color: var(--gold); }
+
+    .btn-cta {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 100%;
+      padding: .95rem;
+      background: var(--gold);
+      color: #07090F;
+      font-family: 'Raleway', sans-serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      border: none; cursor: pointer;
+      overflow: hidden;
+      transition: color .4s;
+    }
+    .btn-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: #07090F;
+      transform: translateX(-101%);
+      transition: transform .5s cubic-bezier(.16,1,.3,1);
+    }
+    .btn-cta:hover { color: var(--gold); }
+    .btn-cta:hover::before { transform: translateX(0); }
+    .btn-cta span { position: relative; z-index: 1; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .6rem;
+      padding: .75rem 2rem;
+      border: 1px solid rgba(201,168,76,.4);
+      color: var(--gold);
+      font-size: .65rem;
+      letter-spacing: .18em;
+      font-family: 'Raleway', sans-serif;
+      transition: background .35s, border-color .35s, color .35s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-ghost:hover {
+      background: var(--gold-dim);
+      border-color: var(--gold);
+    }
+
+    .section-label {
+      font-family: 'Raleway', sans-serif;
+      font-size: .58rem;
+      letter-spacing: .28em;
+      color: var(--gold);
+      opacity: .75;
+      margin-bottom: .5rem;
+    }
+    .gold-rule {
+      display: block;
+      width: 2.5rem; height: 1px;
+      background: var(--gold);
+      margin: 1.25rem 0;
+    }
+
+    /* ── GALLERY ── */
+    .btnCat {
+      border: 1px solid rgba(255,255,255,.12);
+      padding: .5rem 1.2rem;
+      font-size: .6rem;
+      letter-spacing: .18em;
+      font-family: 'Raleway', sans-serif;
+      color: var(--text-muted);
+      transition: all .3s;
+      cursor: pointer;
+      background: transparent;
+    }
+    .btnCat:hover { border-color: rgba(201,168,76,.4); color: var(--text-main); }
+    .btnCat.active { border-color: var(--gold); color: var(--gold); }
+    #galeriaImg { transition: opacity .4s ease; }
+    #galeriaImg.fade { opacity: 0; }
+
+    /* ── MODAL (melhorado com setas) ── */
+    #modalImg {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(7,9,15,.96);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    #modalImg.open { display: flex; }
+    #imgExpandida {
+      max-width: 90vw; max-height: 85vh;
+      border: 1px solid rgba(201,168,76,.15);
+      object-fit: contain;
+      transition: opacity .25s;
+    }
+    #closeModal {
+      position: absolute; top: 1.5rem; right: 2rem;
+      font-size: 1.5rem; cursor: pointer;
+      color: rgba(240,235,225,.4);
+      transition: color .2s;
+      z-index: 10;
+    }
+    #closeModal:hover { color: var(--gold); }
+    /* Setas do modal */
+    .modal-arrow {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      width: 52px; height: 52px;
+      border: 1.5px solid rgba(201,168,76,.4);
+      background: rgba(7,9,15,.7);
+      backdrop-filter: blur(8px);
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--gold);
+      transition: background .3s, border-color .3s, transform .3s;
+      z-index: 10;
+    }
+    .modal-arrow:hover {
+      background: rgba(201,168,76,.15);
+      border-color: var(--gold);
+    }
+    .modal-arrow:hover svg { transform: translateX(0) scale(1.1); }
+    #modalPrev { left: 1.5rem; }
+    #modalNext { right: 1.5rem; }
+    #modalCounter {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 50%; transform: translateX(-50%);
+      font-family: 'Raleway', sans-serif;
+      font-size: .55rem;
+      letter-spacing: .2em;
+      color: rgba(240,235,225,.35);
+    }
+
+    /* ── DIFERENCIAIS ── */
+    .dif-card {
+      border: 1px solid rgba(201,168,76,.08);
+      padding: 1.75rem;
+      background: rgba(201,168,76,.03);
+      transition: border-color .35s, background .35s, transform .35s;
+      cursor: default;
+    }
+    .dif-card:hover {
+      border-color: rgba(201,168,76,.28);
+      background: rgba(201,168,76,.07);
+      transform: translateY(-3px);
+    }
+    .dif-icon { width: 1.75rem; height: 1.75rem; opacity: .75; }
+
+    /* ── SCARCITY ── */
+    .scarcity-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,.5); }
+      50%       { box-shadow: 0 0 0 6px rgba(201,168,76,0); }
+    }
+
+    /* ── TOUR ── */
+    .tour-wrapper {
+      position: relative; padding-top: 56.25%;
+      border: 1px solid rgba(201,168,76,.15);
+      border-radius: 2px; overflow: hidden;
+      background: #0C1320;
+    }
+    .tour-wrapper iframe,
+    .tour-wrapper .tour-placeholder {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    .tour-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem; cursor: pointer;
+      background: var(--bg-mid);
+      transition: background .3s;
+    }
+    .tour-placeholder:hover { background: #111827; }
+    .tour-play-icon {
+      width: 64px; height: 64px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .35s, background .35s;
+    }
+    .tour-placeholder:hover .tour-play-icon {
+      transform: scale(1.08);
+      background: var(--gold-dim);
+    }
+
+    /* ── MAPA ── */
+    .map-wrapper {
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(201,168,76,.15);
+      border-radius: 2px;
+    }
+    .map-wrapper iframe {
+      width: 100%; height: 340px;
+      display: block; filter: grayscale(.7) contrast(1.1) brightness(.85);
+    }
+
+    /* ── VIDEO INLINE ── */
+    .video-inline-wrapper {
+      position: relative;
+      padding-top: 56.25%;
+      background: #000;
+      border: 1px solid rgba(201,168,76,.15);
+      overflow: hidden;
+    }
+    .video-inline-wrapper iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    .video-inline-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1.2rem;
+      cursor: pointer;
+      background: var(--bg-card);
+      transition: background .3s;
+    }
+    .video-inline-placeholder:hover { background: #0a0f1a; }
+    .video-inline-placeholder img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: .45;
+      transition: opacity .3s;
+    }
+    .video-inline-placeholder:hover img { opacity: .6; }
+    .video-inline-placeholder .play-btn {
+      position: relative; z-index: 2;
+      width: 72px; height: 72px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .35s, background .35s;
+    }
+    .video-inline-placeholder:hover .play-btn {
+      transform: scale(1.1);
+      background: rgba(201,168,76,.2);
+    }
+    .video-inline-placeholder .play-label {
+      position: relative; z-index: 2;
+      font-size: .6rem;
+      letter-spacing: .22em;
+      color: rgba(240,235,225,.7);
+    }
+
+    /* ── WHATSAPP FLOAT ── */
+    #btnWa {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      width: 54px; height: 54px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(37,211,102,.35);
+      transition: transform .3s, box-shadow .3s;
+    }
+    #btnWa:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 32px rgba(37,211,102,.5);
+    }
+    #waPulse {
+      position: absolute; inset: -4px;
+      border-radius: 50%;
+      border: 2px solid rgba(37,211,102,.4);
+      animation: wa-ring 2s ease-out infinite;
+    }
+    @keyframes wa-ring {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* ── PROOF / FOOTER ── */
+    .proof-card {
+      border: 1px solid rgba(201,168,76,.1);
+      padding: 1.5rem;
+      background: rgba(201,168,76,.03);
+    }
+    .gold-gradient-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+      opacity: .25;
+    }
+    .progress-bar-bg {
+      height: 3px; background: rgba(201,168,76,.12); border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--gold); border-radius: 99px;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(.16,1,.3,1);
+    }
+
+    #heroText { will-change: transform; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      #hamburger { display: flex; }
+      .hide-mobile { display: none !important; }
+      #desktopNav { display: none !important; }
+      #hero { align-items: flex-start; padding-top: 80px; min-height: unset; height: auto; padding-bottom: 0; }
+      #heroText { padding-top: 0 !important; }
+      .modal-arrow { display: flex; }
+      #modalPrev { left: .5rem; }
+      #modalNext { right: .5rem; }
+    }
+
+    /* Seção hero mobile: vídeo + formulário empilhados */
+    @media (max-width: 767px) {
+      #heroVideoSection {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16/9;
+        overflow: hidden;
+      }
+      #heroVideoSection iframe {
+        width: 100%; height: 100%;
+        transform: none;
+      }
+      #heroVideoOverlayMobile {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(7,9,15,.3) 0%, rgba(7,9,15,.7) 100%);
+        pointer-events: none;
+      }
+      #heroCopyMobile {
+        padding: 2rem 1.25rem 0;
+      }
+      #heroFormMobile {
+        padding: 1.5rem 1.25rem 2rem;
+      }
+    }
+
+    @keyframes scrollLine {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+    }
+  </style>
 </head>
+<body>
 
-<body class="bg-[#080E16] text-[#F8F5EF]">
-
-<!-- NAV -->
-<header class="fixed w-full z-50 bg-black/80 backdrop-blur">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-    <h1 class="tracking-[6px] text-[#C9A84C]">INFINITY</h1>
-<ul class="hidden md:flex gap-8 text-xs tracking-[2px]">
-
-  <li><a href="#home">HOME</a></li>
-  <li><a href="#galeria">GALERIA</a></li>
-  <li><a href="#diferenciais">DIFERENCIAIS</a></li>
-  <li><a href="#tour">TOUR VIRTUAL</a></li>
-  <li><a href="#localizacao">LOCALIZAÇÃO</a></li>
-  <li><a href="#contato">CONTATO</a></li>
-
-</ul>
-
-<a href="#contato" class="border px-4 py-2">
-  SAIBA MAIS
-</a>
+<!-- ════ NAV ════ -->
+<header id="mainNav" class="py-5 px-6">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div>
+      <span class="font-['Cormorant_Garamond'] text-xl tracking-[.35em] text-[var(--gold)]">INFINITY</span>
+      <span class="font-['Raleway'] text-[.5rem] tracking-[.22em] text-[rgba(240,235,225,.35)] ml-3 hide-mobile">BROOKLIN</span>
+    </div>
+    <nav id="desktopNav" class="hidden md:flex gap-8">
+      <a href="#home"         class="nav-link">HOME</a>
+      <a href="#galeria"      class="nav-link">GALERIA</a>
+      <a href="#diferenciais" class="nav-link">DIFERENCIAIS</a>
+      <a href="#tour"         class="nav-link">TOUR 3D</a>
+      <a href="#localizacao"  class="nav-link">LOCALIZAÇÃO</a>
+    </nav>
+    <a href="#contato" class="btn-ghost text-xs hide-mobile">FALAR COM ESPECIALISTA</a>
+    <!-- Hamburger -->
+    <button id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
-<!-- HERO -->
-<section class="h-screen relative flex items-center overflow-hidden">
+<!-- Mobile Menu Overlay -->
+<div id="mobileMenu">
+  <div class="mobile-menu-line"></div>
+  <a href="#home"         onclick="closeMenu()">HOME</a>
+  <a href="#galeria"      onclick="closeMenu()">GALERIA</a>
+  <a href="#diferenciais" onclick="closeMenu()">DIFERENCIAIS</a>
+  <a href="#tour"         onclick="closeMenu()">TOUR 3D</a>
+  <a href="#localizacao"  onclick="closeMenu()">LOCALIZAÇÃO</a>
+  <a href="#contato"      onclick="closeMenu()">CONTATO</a>
+  <div class="mobile-menu-line"></div>
+  <a href="https://wa.me/5511910890052" target="_blank" rel="noopener"
+     style="font-size:1rem; letter-spacing:.18em; color:var(--gold); font-family:'Raleway',sans-serif; font-weight:500;"
+     onclick="closeMenu()">
+    FALAR COM ESPECIALISTA
+  </a>
+</div>
 
-  <!-- VIDEO -->
-  <div class="absolute inset-0">
-    <iframe 
-      class="w-full h-full scale-150 pointer-events-none"
-      src="https://www.youtube.com/embed/kIricrJFLYI?autoplay=1&mute=1&loop=1&playlist=kIricrJFLYI&controls=0"
-      allow="autoplay"
-    ></iframe>
+<!-- ════ HERO — DESKTOP ════ -->
+<section id="home">
 
-    <div class="absolute inset-0 bg-black/60"></div>
+  <!-- DESKTOP HERO (≥768px) -->
+  <div id="hero" class="hidden md:flex">
+    <div id="heroVideo" class="absolute inset-0">
+      <iframe
+        class="w-full h-full scale-150 pointer-events-none"
+        src="https://www.youtube.com/embed/kIricrJFLYI?autoplay=1&mute=1&loop=1&playlist=kIricrJFLYI&controls=0"
+        allow="autoplay"
+        title="Infinity Brooklin">
+      </iframe>
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-line"></div>
+    <div id="heroText" class="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center w-full pt-24">
+      <!-- COPY -->
+      <div>
+        <div class="eyebrow reveal">LANÇAMENTO · BROOKLIN · 2026</div>
+        <h2 class="text-5xl md:text-6xl leading-[1.05] mb-6 reveal reveal-delay-1">
+          Onde a cidade<br>
+          <span class="italic text-[var(--gold)]">para de existir</span><br>
+          <span class="text-3xl md:text-4xl font-light">fora da sua varanda.</span>
+        </h2>
+        <span class="gold-rule reveal reveal-delay-2"></span>
+        <p class="text-[rgba(240,235,225,.55)] text-sm leading-relaxed mb-6 reveal reveal-delay-2">
+          Um endereço que não precisa se explicar — entre o refúgio residencial do Brooklin
+          e a conveniência de tudo que importa na Berrini.
+        </p>
+        <div class="reveal reveal-delay-3 flex flex-wrap gap-6 text-sm mb-8">
+          <div>
+            <div class="text-[var(--gold)] font-['Cormorant_Garamond'] text-2xl">143 – 187<span class="text-base">m²</span></div>
+            <div class="text-[.6rem] tracking-[.18em] text-[var(--text-muted)] mt-1">ÁREA PRIVATIVA</div>
+          </div>
+          <div class="w-px bg-[rgba(201,168,76,.2)]"></div>
+          <div>
+            <div class="text-[var(--gold)] font-['Cormorant_Garamond'] text-2xl">2 – 4</div>
+            <div class="text-[.6rem] tracking-[.18em] text-[var(--text-muted)] mt-1">DORMITÓRIOS</div>
+          </div>
+          <div class="w-px bg-[rgba(201,168,76,.2)]"></div>
+          <div>
+            <div class="text-[var(--gold)] font-['Cormorant_Garamond'] text-2xl">1</div>
+            <div class="text-[.6rem] tracking-[.18em] text-[var(--text-muted)] mt-1">HALL PRIVATIVO</div>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-4 mb-8 p-4 border border-[rgba(201,168,76,.15)] bg-[rgba(201,168,76,.04)]">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[.58rem] tracking-[.2em] text-[var(--text-muted)]">DISPONIBILIDADE · FASE 1</span>
+            <span class="flex items-center gap-2 text-[.6rem] text-[var(--gold)]">
+              <span class="scarcity-dot"></span> ÚLTIMAS UNIDADES
+            </span>
+          </div>
+          <div class="progress-bar-bg" id="pbBg">
+            <div class="progress-bar-fill" id="pbFill" data-width="78"></div>
+          </div>
+          <div class="flex justify-between mt-2 text-[.55rem] tracking-[.12em] text-[rgba(240,235,225,.3)]">
+            <span>RESERVADAS</span><span>78% DA FASE 1</span>
+          </div>
+        </div>
+      </div>
+      <!-- FORM CARD (desktop) -->
+      <div class="form-card p-8 reveal reveal-delay-2">
+        <p class="section-label mb-1">ACESSO PRIORITÁRIO</p>
+        <h3 class="font-['Cormorant_Garamond'] text-2xl mb-1">Receba a apresentação completa</h3>
+        <p class="text-[.72rem] text-[var(--text-muted)] mb-6 leading-relaxed">
+          Tabela de preços, plantas detalhadas e condições exclusivas para esta fase.
+        </p>
+        <form onsubmit="sendWhats(event)" class="space-y-5">
+          <input id="nome-d" type="text" placeholder="Seu nome" required class="form-input">
+          <input id="tel-d"  type="tel"  placeholder="WhatsApp" required class="form-input">
+          <input id="email-d" type="email" placeholder="E-mail" class="form-input">
+          <div class="relative">
+            <select id="interesse-d" class="form-input" style="color:rgba(240,235,225,.55); appearance:none;">
+              <option value="" disabled selected style="background:#0C1320">Tipologia de interesse</option>
+              <option value="143m" style="background:#0C1320">143 m² — 2 Dormitórios</option>
+              <option value="160m" style="background:#0C1320">160 m² — 3 Dormitórios</option>
+              <option value="187m" style="background:#0C1320">187 m² — 4 Dormitórios</option>
+              <option value="duplex" style="background:#0C1320">Duplex</option>
+            </select>
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--gold)] text-xs pointer-events-none">▾</span>
+          </div>
+          <button type="submit" class="btn-cta mt-2">
+            <span>SOLICITAR APRESENTAÇÃO EXCLUSIVA</span>
+          </button>
+          <p class="text-[.55rem] text-center tracking-[.1em] text-[rgba(240,235,225,.2)]">
+            SUAS INFORMAÇÕES SÃO TRATADAS COM ABSOLUTA CONFIDENCIALIDADE
+          </p>
+        </form>
+      </div>
+    </div>
+    <!-- SCROLL INDICATOR -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="text-[.5rem] tracking-[.3em]">EXPLORAR</span>
+      <div style="width:1px;height:40px;background:linear-gradient(180deg,rgba(201,168,76,.8),transparent);animation:scrollLine 2s ease-in-out infinite;"></div>
+    </div>
   </div>
 
-  <!-- CONTEÚDO -->
-  <div class="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center w-full">
+  <!-- MOBILE HERO (< 768px) -->
+  <div class="md:hidden" style="background:var(--bg-dark);">
+    <!-- Vídeo com aspect ratio -->
+    <div id="heroVideoSection" style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;">
+      <iframe
+        style="position:absolute;inset:0;width:100%;height:100%;transform:scale(1.5);pointer-events:none;"
+        src="https://www.youtube.com/embed/kIricrJFLYI?autoplay=1&mute=1&loop=1&playlist=kIricrJFLYI&controls=0"
+        allow="autoplay"
+        title="Infinity Brooklin">
+      </iframe>
+      <div id="heroVideoOverlayMobile"></div>
+      <!-- Badge sobre o vídeo -->
+      <div style="position:absolute;bottom:1rem;left:1rem;right:1rem;display:flex;justify-content:space-between;align-items:flex-end;">
+        <div class="eyebrow" style="margin:0;font-size:.5rem;padding:.3rem .75rem;">LANÇAMENTO · BROOKLIN · 2026</div>
+        <span class="flex items-center gap-2 text-[.55rem] text-[var(--gold)]" style="background:rgba(7,9,15,.7);padding:.3rem .6rem;border:1px solid rgba(201,168,76,.2);">
+          <span class="scarcity-dot"></span> ÚLTIMAS UNIDADES
+        </span>
+      </div>
+    </div>
 
-    <!-- TEXTO (lado esquerdo) -->
-    <div>
-      <h2 class="text-3xl md:text-4xl mb-6 leading-tight">
-        RESERVE SEU LUGAR EM 2026
+    <!-- Copy mobile -->
+    <div id="heroCopyMobile" style="padding:2rem 1.25rem 0;">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:2rem;line-height:1.1;margin-bottom:1rem;">
+        Onde a cidade<br>
+        <span style="font-style:italic;color:var(--gold);">para de existir</span><br>
+        <span style="font-size:1.3rem;font-weight:300;">fora da sua varanda.</span>
       </h2>
-
-      <p class="text-gray-300 mb-6">
-        Brooklin: O encontro do refúgio residencial com a conveniência da Berrini.
+      <span class="gold-rule"></span>
+      <p style="color:rgba(240,235,225,.5);font-size:.78rem;line-height:1.7;margin-bottom:1.5rem;">
+        Um endereço que não precisa se explicar — entre o refúgio residencial do Brooklin
+        e a conveniência de tudo que importa na Berrini.
       </p>
-
-      <p class="mb-4 text-[#C9A84C]">
-        Unidades de 143, 160 e 187m²<br>
-        2 a 4 Dormitórios
-      </p>
-
-      <p class="text-gray-400">
-        Varandas Cruzadas | Acesso via Hall Privativo.
-      </p>
+      <!-- Stats -->
+      <div style="display:flex;gap:1.25rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold);">143–187<span style="font-size:.9rem;">m²</span></div>
+          <div style="font-size:.55rem;letter-spacing:.18em;color:var(--text-muted);">ÁREA PRIVATIVA</div>
+        </div>
+        <div style="width:1px;background:rgba(201,168,76,.2);"></div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold);">2 – 4</div>
+          <div style="font-size:.55rem;letter-spacing:.18em;color:var(--text-muted);">DORMITÓRIOS</div>
+        </div>
+        <div style="width:1px;background:rgba(201,168,76,.2);"></div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold);">1</div>
+          <div style="font-size:.55rem;letter-spacing:.18em;color:var(--text-muted);">HALL PRIVATIVO</div>
+        </div>
+      </div>
     </div>
 
-    <!-- FORM (lado direito) -->
-    <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20">
-
-      <h3 class="mb-6 text-lg">Receba informações</h3>
-
-      <form onsubmit="sendWhats(event)" class="space-y-4">
-        <input id="nome" placeholder="Nome" class="w-full bg-transparent border-b p-3 outline-none">
-        <input id="tel" placeholder="Telefone" class="w-full bg-transparent border-b p-3 outline-none">
-        <input id="email" placeholder="E-mail" class="w-full bg-transparent border-b p-3 outline-none">
-
-        <button class="w-full bg-[#C9A84C] text-black py-3 mt-4">
-          SOLICITAR APRESENTAÇÃO
-        </button>
-      </form>
-
+    <!-- FORM mobile — abaixo do vídeo e copy -->
+    <div id="heroFormMobile" style="padding:0 1.25rem 2.5rem;">
+      <div class="form-card" style="padding:1.75rem;">
+        <p class="section-label mb-1">ACESSO PRIORITÁRIO</p>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;margin-bottom:.5rem;">Receba a apresentação completa</h3>
+        <p style="font-size:.7rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.25rem;">
+          Tabela de preços, plantas e condições exclusivas desta fase.
+        </p>
+        <form onsubmit="sendWhats(event)" class="space-y-4">
+          <input id="nome-m" type="text" placeholder="Seu nome" required class="form-input">
+          <input id="tel-m"  type="tel"  placeholder="WhatsApp" required class="form-input">
+          <input id="email-m" type="email" placeholder="E-mail" class="form-input">
+          <div class="relative">
+            <select id="interesse-m" class="form-input" style="color:rgba(240,235,225,.55);appearance:none;">
+              <option value="" disabled selected style="background:#0C1320">Tipologia de interesse</option>
+              <option value="143m" style="background:#0C1320">143 m² — 2 Dormitórios</option>
+              <option value="160m" style="background:#0C1320">160 m² — 3 Dormitórios</option>
+              <option value="187m" style="background:#0C1320">187 m² — 4 Dormitórios</option>
+              <option value="duplex" style="background:#0C1320">Duplex</option>
+            </select>
+            <span style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.75rem;pointer-events:none;">▾</span>
+          </div>
+          <button type="submit" class="btn-cta">
+            <span>SOLICITAR APRESENTAÇÃO EXCLUSIVA</span>
+          </button>
+          <p style="font-size:.5rem;text-align:center;letter-spacing:.1em;color:rgba(240,235,225,.18);">
+            SUAS INFORMAÇÕES SÃO TRATADAS COM ABSOLUTA CONFIDENCIALIDADE
+          </p>
+        </form>
+      </div>
     </div>
-
   </div>
 
 </section>
 
-<section id="galeria" class="py-24 bg-black px-6">
-
+<!-- ════ GALERIA ════ -->
+<section id="galeria" class="py-28 bg-black px-6">
   <div class="max-w-6xl mx-auto">
-
-    <h2 class="text-4xl mb-10">Galeria</h2>
-
-    <!-- BOTÕES -->
-    <div class="flex flex-wrap gap-4 mb-8 text-xs tracking-widest">
-
- <button onclick="trocarCategoria('comuns', this)" class="btnCat active">ÁREAS COMUNS</button>
-<button onclick="trocarCategoria('apartamentos', this)" class="btnCat">APARTAMENTOS</button>
-<button onclick="trocarCategoria('implantacao', this)" class="btnCat">IMPLANTAÇÃO</button>
-<button onclick="trocarCategoria('plantas', this)" class="btnCat">PLANTAS</button>
+    <div class="reveal">
+      <p class="section-label">GALERIA</p>
+      <h2 class="text-4xl md:text-5xl mb-2">Um resort privado,<br><span class="italic text-[var(--gold)]">seu.</span></h2>
+      <span class="gold-rule"></span>
     </div>
-
-    <!-- SLIDER -->
-    <div class="relative h-[400px] rounded-xl overflow-hidden">
-
-      <img id="galeriaImg" src="img/comuns/TEIXEIRA DUARTE_INFINITY BROOKLIN_ESPACO GOURMET_HR.jpg"
-           class="w-full h-full object-cover transition duration-500">
-
-      <!-- BOTÕES -->
-      <button onclick="prevImg()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 px-3 py-2">
-        ←
-      </button>
-
-      <button onclick="nextImg()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 px-3 py-2">
-        →
-      </button>
-
+    <div class="flex flex-wrap gap-3 mb-8 reveal">
+      <button onclick="trocarCategoria('comuns', this)"      class="btnCat active">ÁREAS COMUNS</button>
+      <button onclick="trocarCategoria('apartamentos', this)" class="btnCat">RESIDÊNCIAS</button>
+      <button onclick="trocarCategoria('implantacao', this)"  class="btnCat">IMPLANTAÇÃO</button>
+      <button onclick="trocarCategoria('plantas', this)"      class="btnCat">PLANTAS</button>
     </div>
-
+    <div class="relative rounded-none overflow-hidden bg-[#0C1320] flex items-center justify-center reveal"
+         style="height:460px; border:1px solid rgba(201,168,76,.1);">
+      <img id="galeriaImg"
+           onclick="abrirImagem()"
+           class="max-w-full max-h-full object-contain cursor-zoom-in select-none"
+           alt="Infinity Brooklin">
+      <p id="nomeImg"
+         class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 to-transparent text-[.6rem] tracking-[.12em] p-4 text-[rgba(240,235,225,.5)]"></p>
+      <button onclick="prevImg()"
+              class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-black/70 border border-[var(--gold)] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black transition-all duration-300 rounded-sm shadow-lg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button onclick="nextImg()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center bg-black/70 border border-[var(--gold)] text-[var(--gold)] hover:bg-[var(--gold)] hover:text-black transition-all duration-300 rounded-sm shadow-lg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div id="thumbs" class="flex gap-2 mt-3 justify-center flex-wrap"></div>
   </div>
-
 </section>
 
-<section id="diferenciais" class="py-24 bg-[#0E1B2A] px-6">
-
+<!-- ════ DIFERENCIAIS ════ -->
+<section id="diferenciais" class="py-28 bg-[var(--bg-mid)] px-6">
   <div class="max-w-6xl mx-auto">
+    <div class="reveal mb-14">
+      <p class="section-label">DIFERENCIAIS</p>
+      <h2 class="text-4xl md:text-5xl leading-tight">
+        Cada detalhe existe<br>
+        <span class="italic text-[var(--gold)]">para que você sinta.</span>
+      </h2>
+      <span class="gold-rule"></span>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="dif-card reveal"><img src="icons/pin.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Endereço que antecede apresentações</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Interface entre refúgio residencial e o eixo Berrini–Faria Lima.</p></div>
+      <div class="dif-card reveal reveal-delay-1"><img src="icons/terr.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">4.400 m² de generosidade</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Terreno com frente para 4 ruas — amplitude que poucos empreendimentos podem oferecer.</p></div>
+      <div class="dif-card reveal reveal-delay-2"><img src="icons/acesso.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Dois acessos sociais independentes</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Privacidade e fluidez para cada momento do seu dia.</p></div>
+      <div class="dif-card reveal"><img src="icons/elevador2.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Elevador panorâmico</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">A experiência começa na portaria — e jamais cessa.</p></div>
+      <div class="dif-card reveal reveal-delay-1"><img src="icons/portao.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Rua privativa de 120 metros</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Um endereço dentro do endereço. Distinção visível desde a chegada.</p></div>
+      <div class="dif-card reveal reveal-delay-2"><img src="icons/hall.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Hall privativo por andar</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Acesso exclusivo direto ao seu apartamento. Sem corredores compartilhados.</p></div>
+      <div class="dif-card reveal"><img src="icons/lazer-completo.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Resort em 365 dias</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Piscina coberta e descoberta, fitness, spa, espaço gourmet, quadra de tênis.</p></div>
+      <div class="dif-card reveal reveal-delay-1"><img src="icons/wellness.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Wellness by design</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Ambientes concebidos para o bem-estar — não como amenidade, mas como essência.</p></div>
+      <div class="dif-card reveal reveal-delay-2"><img src="icons/churras.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Churrasqueira em cada unidade</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Receber com sofisticação, sem abrir mão do conforto que é só seu.</p></div>
+      <div class="dif-card reveal"><img src="icons/varandas.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Varandas cruzadas</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Ventilação e luz naturais que reduzem o tempo dentro de quatro paredes.</p></div>
+      <div class="dif-card reveal reveal-delay-1"><img src="icons/quadra.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Quadra de tênis com lounge</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Espaço social integrado — o jogo continua depois do último set.</p></div>
+      <div class="dif-card reveal reveal-delay-2"><img src="icons/paisagens.svg" class="dif-icon mb-4"><div class="font-['Cormorant_Garamond'] text-xl mb-1">Vista sobre o verde</div><p class="text-xs text-[var(--text-muted)] leading-relaxed">Panorama privilegiado sobre área verde — raridade em São Paulo.</p></div>
+    </div>
+  </div>
+</section>
 
-    <h2 class="text-4xl mb-12">
-      Características que fazem a <span class="text-[#C9A84C] italic">diferença</span>
+<!-- ════ PROOF SOCIAL ════ -->
+<section class="py-20 bg-black px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-3 gap-px bg-[rgba(201,168,76,.08)]">
+      <div class="proof-card reveal bg-black">
+        <div class="font-['Cormorant_Garamond'] text-5xl text-[var(--gold)] mb-2">Teixeira</div>
+        <div class="text-[.58rem] tracking-[.2em] text-[var(--text-muted)] mb-3">DUARTE</div>
+        <p class="text-xs text-[rgba(240,235,225,.4)] leading-relaxed">Construtora portuguesa com mais de 50 anos de legado e presença em 20 países. Cada entrega carrega uma assinatura de precisão reconhecida mundialmente.</p>
+      </div>
+      <div class="proof-card reveal reveal-delay-1 bg-black">
+        <div class="font-['Cormorant_Garamond'] text-5xl text-[var(--gold)] mb-2">2026</div>
+        <div class="text-[.58rem] tracking-[.2em] text-[var(--text-muted)] mb-3">ENTREGA PREVISTA</div>
+        <p class="text-xs text-[rgba(240,235,225,.4)] leading-relaxed">Prazo respeitado com o rigor europeu da construtora. Acompanhe cada etapa da sua residência em tempo real.</p>
+      </div>
+      <div class="proof-card reveal reveal-delay-2 bg-black">
+        <div class="font-['Cormorant_Garamond'] text-5xl text-[var(--gold)] mb-2">Fase&nbsp;1</div>
+        <div class="text-[.58rem] tracking-[.2em] text-[var(--text-muted)] mb-3">DISPONIBILIDADE LIMITADA</div>
+        <p class="text-xs text-[rgba(240,235,225,.4)] leading-relaxed">Apenas as unidades desta fase têm acesso às condições de pré-lançamento. As fases seguintes serão comercializadas com tabela revisada.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ TOUR VIRTUAL ════ -->
+<section id="tour" class="py-28 bg-black px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="reveal mb-10">
+      <p class="section-label">TOUR 3D</p>
+      <h2 class="text-4xl md:text-5xl leading-tight">
+        Entre.<br>
+        <span class="italic text-[var(--gold)]">Sem sair daqui.</span>
+      </h2>
+      <span class="gold-rule"></span>
+      <p class="text-sm text-[var(--text-muted)] max-w-lg">
+        Tecnologia Matterport para uma imersão real em cada cômodo, a qualquer hora, de onde você estiver.
+      </p>
+    </div>
+    <div class="flex gap-3 mb-6 reveal">
+      <button onclick="ativarTour(1)" id="tourBtn1" class="btn-ghost" style="border-color:var(--gold);color:var(--gold)">143 m²</button>
+      <button onclick="ativarTour(2)" id="tourBtn2" class="btn-ghost">187 m²</button>
+    </div>
+    <div class="reveal">
+      <div class="tour-wrapper" id="tourWrapper1">
+        <div class="tour-placeholder" id="tourPlaceholder1" onclick="carregarTour(1)">
+          <div class="tour-play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polygon points="5,3 19,12 5,21" fill="var(--gold)"/></svg></div>
+          <p class="text-[.65rem] tracking-[.2em] text-[rgba(240,235,225,.4)]">INICIAR TOUR VIRTUAL · 143 m²</p>
+        </div>
+      </div>
+      <div class="tour-wrapper hidden mt-4" id="tourWrapper2">
+        <div class="tour-placeholder" id="tourPlaceholder2" onclick="carregarTour(2)">
+          <div class="tour-play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polygon points="5,3 19,12 5,21" fill="var(--gold)"/></svg></div>
+          <p class="text-[.65rem] tracking-[.2em] text-[rgba(240,235,225,.4)]">INICIAR TOUR VIRTUAL · 187 m²</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ VÍDEOS ════ -->
+<section class="py-20 bg-[var(--bg-mid)] px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="reveal mb-8">
+      <p class="section-label">VÍDEOS</p>
+      <h2 class="text-3xl">O empreendimento em movimento</h2>
+      <span class="gold-rule"></span>
+      <p class="text-sm text-[var(--text-muted)] max-w-lg leading-relaxed">
+        Assista ao vídeo de apresentação do Infinity Brooklin — diretamente aqui.
+      </p>
+    </div>
+
+    <!-- Vídeo inline em destaque -->
+    <div class="reveal mb-6">
+      <div class="video-inline-wrapper" id="videoInlineWrapper">
+        <!-- Placeholder com thumbnail -->
+        <div class="video-inline-placeholder" id="videoInlinePlaceholder" onclick="carregarVideoInline()">
+          <img src="https://img.youtube.com/vi/kIricrJFLYI/maxresdefault.jpg" alt="Infinity Brooklin" loading="lazy">
+          <div class="play-btn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <polygon points="6,3 20,12 6,21" fill="var(--gold)"/>
+            </svg>
+          </div>
+          <span class="play-label">ASSISTIR APRESENTAÇÃO GERAL</span>
+        </div>
+      </div>
+      <div style="padding:.75rem 0 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem;">
+        <p style="font-size:.6rem;letter-spacing:.18em;color:var(--gold);">INFINITY BROOKLIN — APRESENTAÇÃO GERAL</p>
+        <a href="https://www.youtube.com/watch?v=kIricrJFLYI" target="_blank" rel="noopener"
+           style="font-size:.55rem;letter-spacing:.15em;color:rgba(240,235,225,.35);display:flex;align-items:center;gap:.4rem;transition:color .2s;text-decoration:none;"
+           onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='rgba(240,235,225,.35)'">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          VER NO YOUTUBE
+        </a>
+      </div>
+    </div>
+
+    <!-- Cards secundários -->
+    <div class="grid md:grid-cols-2 gap-4 reveal">
+      <!-- Playlist -->
+      <a href="https://www.youtube.com/playlist?list=PLQyy7T0mLpCezsL-hBHScz40kWfN479Zb"
+         target="_blank" rel="noopener"
+         class="group relative overflow-hidden flex items-center gap-4 border border-[rgba(201,168,76,.12)] bg-[var(--bg-card)] p-5 hover:border-[rgba(201,168,76,.3)] transition-all duration-300"
+         style="text-decoration:none;">
+        <div style="width:48px;height:48px;border:1px solid rgba(201,168,76,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s;" class="group-hover:bg-[var(--gold-dim)]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="14" height="2" rx="1" fill="var(--gold)"/>
+            <rect x="3" y="9" width="14" height="2" rx="1" fill="var(--gold)"/>
+            <rect x="3" y="13" width="9"  height="2" rx="1" fill="var(--gold)"/>
+            <polygon points="17,11 23,14.5 17,18" fill="var(--gold)"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-[.65rem] tracking-[.18em] text-[var(--text-main)] mb-1">PLAYLIST COMPLETA</p>
+          <p class="text-[.55rem] tracking-[.12em] text-[var(--text-muted)]">Todos os vídeos no YouTube</p>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="margin-left:auto;opacity:.5;" class="group-hover:opacity-100 transition-opacity"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <!-- Canal / CTA -->
+      <a href="https://www.youtube.com/playlist?list=PLQyy7T0mLpCezsL-hBHScz40kWfN479Zb"
+         target="_blank" rel="noopener"
+         class="group relative overflow-hidden flex items-center gap-4 border border-[rgba(201,168,76,.12)] bg-[var(--bg-card)] p-5 hover:border-[rgba(201,168,76,.3)] transition-all duration-300"
+         style="text-decoration:none;">
+        <div style="flex-shrink:0;">
+          <svg width="38" height="28" viewBox="0 0 42 30" fill="none">
+            <rect width="42" height="30" rx="8" fill="#FF0000" opacity=".85"/>
+            <polygon points="17,9 17,21 29,15" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-[.65rem] tracking-[.18em] text-[var(--text-main)] mb-1">CANAL OFICIAL</p>
+          <p class="text-[.55rem] tracking-[.12em] text-[var(--text-muted)]">Teixeira Duarte · YouTube</p>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="margin-left:auto;opacity:.5;" class="group-hover:opacity-100 transition-opacity"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ LOCALIZAÇÃO ════ -->
+<section id="localizacao" class="py-28 bg-black px-6">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-14 items-center">
+    <div class="reveal">
+      <p class="section-label">LOCALIZAÇÃO</p>
+      <h2 class="text-4xl md:text-5xl leading-tight mb-4">
+        No centro de<br>
+        <span class="italic text-[var(--gold)]">tudo que importa.</span>
+      </h2>
+      <span class="gold-rule"></span>
+      <p class="text-sm text-[var(--text-muted)] leading-relaxed mb-8">
+        Rua Furnas, 655 — Brooklin. A 8 minutos da Berrini,
+        10 da Faria Lima e 5 do JK Iguatemi.
+        Residencial no caminho, corporativo ao alcance.
+      </p>
+      <div class="space-y-2 mb-8 text-xs text-[rgba(240,235,225,.45)]">
+        <div class="flex items-center gap-3"><span class="text-[var(--gold)]">—</span> Berrini · 8 min de carro</div>
+        <div class="flex items-center gap-3"><span class="text-[var(--gold)]">—</span> Faria Lima · 10 min de carro</div>
+        <div class="flex items-center gap-3"><span class="text-[var(--gold)]">—</span> JK Iguatemi · 5 min de carro</div>
+        <div class="flex items-center gap-3"><span class="text-[var(--gold)]">—</span> Vila Olímpia · 7 min de carro</div>
+        <div class="flex items-center gap-3"><span class="text-[var(--gold)]">—</span> Hipódromo de Cidade Jardim (área verde) · 4 min</div>
+      </div>
+      <a href="https://wa.me/5511910890052" class="btn-ghost inline-flex items-center gap-3" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="#25D366"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/></svg>
+        FALAR COM ESPECIALISTA
+      </a>
+    </div>
+    <div class="map-wrapper reveal reveal-delay-1">
+      <iframe src="https://www.google.com/maps?q=Rua+Furnas+655+Brooklin+SP&output=embed" loading="lazy" title="Localização Infinity Brooklin"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ════ MATERIAIS ════ -->
+<section class="py-20 bg-[var(--bg-mid)] px-6">
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <p class="section-label text-center mb-1">DOCUMENTAÇÃO</p>
+    <h2 class="font-['Cormorant_Garamond'] text-3xl mb-8">
+      Tudo que você precisa para decidir<br>
+      <span class="italic text-[var(--gold)]">com confiança.</span>
     </h2>
-
-    <div class="grid md:grid-cols-2 gap-8 text-gray-300">
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/pin.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Localização Única</strong><br>
-          Interface entre bairro residencial e eixo corporativo.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/terr.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Terreno 4.400 m²</strong><br>
-          Frente para 4 ruas.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/acesso.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Dois acessos</strong><br>
-          Entradas sociais independentes.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/lazer-completo.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Lazer completo</strong><br>
-          Piscina, academia, quadras e mais.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/elevador2.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Elevador panorâmico</strong><br>
-          Experiência desde a portaria.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/portao.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Rua privativa</strong><br>
-          120m de frente.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/hall.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Hall privativo</strong><br>
-          Mais exclusividade.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/wellness.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Wellness</strong><br>
-          Ambientes de bem-estar.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/churras.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Churrasqueira</strong><br>
-          Em todas unidades.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/quadra.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Quadra de tênis</strong><br>
-          Com espaço social.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/varandas.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Varandas cruzadas</strong><br>
-          Ventilação e luz natural.
-        </div>
-      </div>
-
-      <div class="flex gap-4 items-start">
-        <img src="icons/paisagens.svg" class="w-6 mt-1">
-        <div>
-          <strong class="text-white">Vista privilegiada</strong><br>
-          Área verde ao redor.
-        </div>
-      </div>
-
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="Ficha tecnica Infinity Brooklin.pdf" download class="btn-ghost justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        FICHA TÉCNICA
+      </a>
+      <a href="Memorial descritivo Infinity Brooklin.pdf" download class="btn-ghost justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        MEMORIAL DESCRITIVO
+      </a>
     </div>
-
   </div>
-
 </section>
 
-
-<section id="localizacao" class="py-24 bg-[#0E1B2A] px-6">
-
-  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
-
-    <iframe 
-      src="https://www.google.com/maps?q=Rua+Furnas+655+Brooklin+SP&output=embed"
-      class="w-full h-80 rounded-xl border-0"
-      loading="lazy">
-    </iframe>
-
-    <div>
-      <h2 class="text-3xl mb-6">Localização estratégica</h2>
-
-      <p class="text-gray-400 mb-6">
-        Próximo à Berrini, Faria Lima, Vila Olímpia e JK Iguatemi.
+<!-- ════ CONTATO ════ -->
+<section id="contato" class="py-28 bg-black px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="reveal">
+      <p class="section-label text-center mb-1">CONTATO</p>
+      <h2 class="text-4xl md:text-5xl mb-4">
+        Sua próxima decisão<br>
+        <span class="italic text-[var(--gold)]">merece atenção real.</span>
+      </h2>
+      <span class="gold-rule mx-auto"></span>
+      <p class="text-sm text-[var(--text-muted)] mb-12 max-w-md mx-auto leading-relaxed">
+        Atendimento direto com especialista dedicada ao empreendimento — sem filas, sem robôs.
       </p>
-
-      <a href="https://wa.me/5511930178903"
-         class="bg-green-500 px-6 py-3 inline-block rounded-lg">
-        Falar no WhatsApp
+    </div>
+    <div class="grid md:grid-cols-2 gap-6 text-left mb-12 reveal">
+      <a href="https://wa.me/5511910890052" target="_blank" class="proof-card flex items-start gap-4 group hover:border-[rgba(201,168,76,.3)] transition-colors" style="text-decoration:none;">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="#25D366" class="mt-1 shrink-0"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/></svg>
+        <div>
+          <div class="text-[.55rem] tracking-[.2em] text-[var(--text-muted)] mb-1">WHATSAPP</div>
+          <div class="font-['Cormorant_Garamond'] text-xl group-hover:text-[var(--gold)] transition-colors">+55 (11) 91089-0052</div>
+        </div>
+      </a>
+      <a href="mailto:isabelaoliv.coelho@gmail.com" class="proof-card flex items-start gap-4 group hover:border-[rgba(201,168,76,.3)] transition-colors" style="text-decoration:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" class="mt-1 shrink-0"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        <div>
+          <div class="text-[.55rem] tracking-[.2em] text-[var(--text-muted)] mb-1">E-MAIL</div>
+          <div class="font-['Cormorant_Garamond'] text-xl group-hover:text-[var(--gold)] transition-colors">isabelaoliv.coelho@gmail.com</div>
+        </div>
+      </a>
+      <a href="https://www.instagram.com/imoveis.coelho" target="_blank" rel="noopener" class="proof-card flex items-start gap-4 group hover:border-[rgba(201,168,76,.3)] transition-colors" style="text-decoration:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" class="mt-1 shrink-0"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="var(--gold)" stroke="none"/></svg>
+        <div>
+          <div class="text-[.55rem] tracking-[.2em] text-[var(--text-muted)] mb-1">INSTAGRAM</div>
+          <div class="font-['Cormorant_Garamond'] text-xl group-hover:text-[var(--gold)] transition-colors">@imoveis.coelho</div>
+        </div>
+      </a>
+      <a href="https://www.linkedin.com/in/isabela-oliveira-coelho" target="_blank" rel="noopener" class="proof-card flex items-start gap-4 group hover:border-[rgba(201,168,76,.3)] transition-colors" style="text-decoration:none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)" class="mt-1 shrink-0"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        <div>
+          <div class="text-[.55rem] tracking-[.2em] text-[var(--text-muted)] mb-1">LINKEDIN</div>
+          <div class="font-['Cormorant_Garamond'] text-xl group-hover:text-[var(--gold)] transition-colors">Isabela Oliveira Coelho</div>
+        </div>
       </a>
     </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- TOUR -->
-<section class="py-24 bg-black text-white">
-
-  <div class="max-w-6xl mx-auto px-6">
-
-    <h2 class="text-4xl mb-10">Tour Virtual</h2>
-
-    <!-- BOTÕES -->
-    <div class="flex gap-4 mb-6">
-      <button onclick="trocarTour(1)" id="btn1"
-        class="px-6 py-2 border border-[#C9A84C] text-[#C9A84C]">
-        143m²
-      </button>
-
-      <button onclick="trocarTour(2)" id="btn2"
-        class="px-6 py-2 border border-gray-600 text-gray-400">
-        187m²
-      </button>
-    </div>
-
-    <!-- CONTAINER -->
-    <div class="relative w-full h-[520px] rounded-xl overflow-hidden border border-[#C9A84C]/20">
-
-      <!-- TOUR 1 -->
-      <iframe 
-        id="tour1"
-        src="https://my.matterport.com/show/?m=aywZ8V73F9S"
-        class="absolute inset-0 w-full h-full"
-        allow="fullscreen; xr-spatial-tracking"
-        allowfullscreen
-      ></iframe>
-
-      <!-- TOUR 2 -->
-      <iframe 
-        id="tour2"
-        src="https://my.matterport.com/show/?m=Zbb4BpLFjbS"
-        class="absolute inset-0 w-full h-full hidden"
-        allow="fullscreen; xr-spatial-tracking"
-        allowfullscreen
-      ></iframe>
-
-    </div>
-
-  </div>
-
-</section>
-
-<!-- MAPA -->
-<section class="py-24 bg-[#0E1B2A] px-6">
-
-  <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
-
-    <iframe 
-  src="https://www.google.com/maps?q=Rua+Furnas+655+Brooklin+SP&output=embed"
-  class="w-full h-80 rounded-xl border-0"
-  loading="lazy">
-</iframe>
-
-    <div>
-      <h2 class="text-3xl mb-6">Agende sua visita</h2>
-
-      <a href="https://wa.me/5511930178903?text=Olá%20tenho%20interesse%20no%20Infinity%20Brooklin"
-         class="bg-green-500 px-6 py-3 inline-block">
-        Falar no WhatsApp
+    <div class="reveal">
+      <div class="gold-gradient-line mb-10"></div>
+      <p class="text-[.6rem] tracking-[.25em] text-[var(--text-muted)] mb-6">INFINITY BROOKLIN · TEIXEIRA DUARTE · 2026</p>
+      <a href="https://wa.me/5511910890052?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20Infinity%20Brooklin%20e%20gostaria%20de%20receber%20a%20apresenta%C3%A7%C3%A3o."
+         target="_blank" rel="noopener"
+         class="btn-cta inline-flex" style="width:auto; padding: 1rem 3rem;">
+        <span style="display:inline-flex;align-items:center;gap:.6rem;">
+          INICIAR ATENDIMENTO EXCLUSIVO
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
       </a>
     </div>
-
   </div>
-
 </section>
 
-<!-- BOTÃO WHATS -->
-<a href="https://wa.me/5511930178903"
-   class="fixed bottom-6 right-6 bg-green-500 w-14 h-14 flex items-center justify-center rounded-full shadow-lg">
-
-<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16">
-  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
-</svg>
-
+<!-- ════ WHATSAPP FLOAT ════ -->
+<a id="btnWa" href="https://wa.me/5511910890052" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <div id="waPulse"></div>
+  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="white" viewBox="0 0 16 16">
+    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"/>
+  </svg>
 </a>
 
-<section id="contato" class="py-24 bg-black px-6">
+<!-- ════ MODAL COM SETAS ════ -->
+<div id="modalImg" onclick="fecharSeClickForaImagem(event)">
+  <span id="closeModal" onclick="fecharImagem()">✕</span>
+  <!-- Seta anterior -->
+  <button class="modal-arrow" id="modalPrev" onclick="modalPrevImg(event)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <img id="imgExpandida" alt="Infinity Brooklin">
+  <!-- Seta próxima -->
+  <button class="modal-arrow" id="modalNext" onclick="modalNextImg(event)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <!-- Contador -->
+  <div id="modalCounter"></div>
+</div>
 
-  <div class="max-w-4xl mx-auto text-center">
-
-    <h2 class="text-4xl mb-8">Entre em contato</h2>
-
-    <p class="text-gray-400 mb-10">
-      Atendimento direto com especialista do empreendimento.
-    </p>
-
-    <div class="space-y-4 text-lg">
-
-      <a href="https://wa.me/5511910890052" class="block hover:text-[#C9A84C]">
-        WhatsApp: +55 (11) 91089-0052
-      </a>
-
-      <a href="https://www.linkedin.com/in/isabela-oliveira-coelho" target="_blank"
-         class="block hover:text-[#C9A84C]">
-        LinkedIn: Isabela Oliveira Coelho
-      </a>
-
-      <a href="https://www.instagram.com/imoveis.coelho" target="_blank"
-         class="block hover:text-[#C9A84C]">
-        Instagram: @imoveis.coelho
-      </a>
-
-      <!-- EMAIL depois -->
-      <!-- <a href="mailto:email@exemplo.com">email@exemplo.com</a> -->
-
-    </div>
-
-  </div>
-
-</section>
-
+<!-- ════ SCRIPTS ════ -->
 <script>
-function sendWhats(e){
-  e.preventDefault();
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
 
-  const nome = document.getElementById('nome').value;
-  const tel = document.getElementById('tel').value;
-
-  const msg = `Olá! Me chamo ${nome} (${tel}) e tenho interesse no Infinity Brooklin`;
-
-  window.open("https://wa.me/5511930178903?text=" + encodeURIComponent(msg), "_blank");
-}
-
-function trocarTour(num){
-  const t1 = document.getElementById('tour1');
-  const t2 = document.getElementById('tour2');
-  const b1 = document.getElementById('btn1');
-  const b2 = document.getElementById('btn2');
-
-  if(num === 1){
-    t1.classList.remove('hidden');
-    t2.classList.add('hidden');
-
-    b1.classList.add('border-[#C9A84C]', 'text-[#C9A84C]');
-    b2.classList.remove('border-[#C9A84C]', 'text-[#C9A84C]');
-  } else {
-    t1.classList.add('hidden');
-    t2.classList.remove('hidden');
-
-    b2.classList.add('border-[#C9A84C]', 'text-[#C9A84C]');
-    b1.classList.remove('border-[#C9A84C]', 'text-[#C9A84C]');
+/* ── PARALLAX HERO (desktop only) ── */
+const heroText = document.getElementById('heroText');
+window.addEventListener('scroll', () => {
+  if (heroText && window.innerWidth >= 768 && window.scrollY < window.innerHeight) {
+    heroText.style.transform = `translateY(${window.scrollY * 0.22}px)`;
   }
+}, { passive: true });
+
+/* ── VIDEO LOAD ANIMATION ── */
+window.addEventListener('load', () => {
+  const hv = document.getElementById('heroVideo');
+  if (hv) setTimeout(() => hv.classList.add('loaded'), 500);
+  document.querySelectorAll('.progress-bar-fill').forEach(el => {
+    const w = el.getAttribute('data-width');
+    if (w) el.style.width = w + '%';
+  });
+});
+
+/* ── REVEAL ON SCROLL ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── HAMBURGER MENU ── */
+function toggleMenu() {
+  const hb = document.getElementById('hamburger');
+  const mm = document.getElementById('mobileMenu');
+  hb.classList.toggle('open');
+  mm.classList.toggle('open');
+  document.body.style.overflow = mm.classList.contains('open') ? 'hidden' : '';
+}
+function closeMenu() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
+/* ── GALLERY ── */
 const galerias = {
   comuns: [
     "img/comuns/TEIXEIRA_DUARTE_INFINITY_BROOKLIN_BRINQUEDOTECA_HR.jpg",
@@ -454,7 +1169,6 @@ const galerias = {
     "img/comuns/TEIXEIRA DUARTE_INFINITY BROOKLYN_Voo_Vista_Duplex_HR2.jpg",
     "img/comuns/TEIXEIRA_DUARTE_INFITNITY_BROOKLIN_FITNESS_HR.jpg"
   ],
-
   apartamentos: [
     'img/apartamentos/TEIXEIRA DUARTE_INFINITY BROOKLIN_LIVING 130M_HR.jpg',
     'img/apartamentos/TEIXEIRA DUARTE_INFINITY BROOKLIN_LIVING 180M_HR2.jpg',
@@ -463,54 +1177,184 @@ const galerias = {
     'img/apartamentos/TEIXEIRA DUARTE_INFINITY BROOKLIN_TERRACO 130M_HR.jpg',
     'img/apartamentos/TEIXEIRA DUARTE_INFINITY BROOKLIN_TERRACO 180M_HR.jpg'
   ],
-
-  implantacao: [
-    'img/implantacao/implantacao.webp',
-  ],
-
+  implantacao: ['img/implantacao/implantacao.webp'],
   plantas: [
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 143m_Ampliada_Decorado_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 143m_Padrão_HRa.jpg',
-'img/plantas/TeixeiraDuarte_InfinityBrooklin_PlantaTipo143m_Padro_HRa.webp',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 159m_Ampliada_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 159m_Padrão_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 184m_Ampliada_Decorado_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 184m_Padrão_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Inferior_11 Pav_Torre A_HR.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Inferior_23 Pav_Torre A_HR.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Inferior_23 Pav_UHB_HR.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Inferior_23 Pav_UHC_HRa.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Superior_12 Pav_Torre A_HR.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Superior_24 Pav_Torre A_HR.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Superior_24 Pav_UHB_HRb.jpg',
-'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Superior_24 Pav_UHC_HRb.jpg'
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 143m_Ampliada_Decorado_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 143m_Padrão_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 159m_Ampliada_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 159m_Padrão_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 184m_Ampliada_Decorado_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo 184m_Padrão_HRa.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Inferior_11 Pav_Torre A_HR.jpg',
+    'img/plantas/Teixeira Duarte_Infinity Brooklin_Planta Tipo Duplex Superior_12 Pav_Torre A_HR.jpg'
   ]
 };
+let categoriaAtual = 'comuns', indexAtual = 0;
 
-let categoriaAtual = "comuns";
-let indexAtual = 0;
-
-function trocarCategoria(cat, el){
-  categoriaAtual = cat;
-  indexAtual = 0;
-
-  document.getElementById("galeriaImg").src = galerias[cat][0];
-
-  document.querySelectorAll(".btnCat").forEach(b => b.classList.remove("active"));
-  el.classList.add("active");
+function atualizarImagem(fade = true) {
+  const img = document.getElementById('galeriaImg');
+  if (fade) img.classList.add('fade');
+  setTimeout(() => {
+    const lista = galerias[categoriaAtual];
+    img.src = lista[indexAtual];
+    let nome = lista[indexAtual].split('/').pop().replace(/\.[^/.]+$/, '')
+      .replace(/TEIXEIRA.*BROOKLIN[_\s]/i, '').replace(/_/g, ' ').replace(/HR[a-z0-9]*/i, '').trim();
+    document.getElementById('nomeImg').innerText = nome;
+    if (fade) img.classList.remove('fade');
+    renderThumbs();
+  }, fade ? 200 : 0);
 }
-
-function nextImg(){
+function nextImg()  { const l=galerias[categoriaAtual]; indexAtual=(indexAtual+1)%l.length; atualizarImagem(); }
+function prevImg()  { const l=galerias[categoriaAtual]; indexAtual=(indexAtual-1+l.length)%l.length; atualizarImagem(); }
+function trocarCategoria(cat, el) {
+  categoriaAtual = cat; indexAtual = 0;
+  document.querySelectorAll('.btnCat').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  atualizarImagem();
+}
+function renderThumbs() {
+  const container = document.getElementById('thumbs');
+  container.innerHTML = '';
   const lista = galerias[categoriaAtual];
-  indexAtual = (indexAtual + 1) % lista.length;
-  document.getElementById("galeriaImg").src = lista[indexAtual];
+  const max = 6;
+  let start = Math.max(0, indexAtual - Math.floor(max/2));
+  let end   = Math.min(lista.length, start + max);
+  start = Math.max(0, end - max);
+  lista.slice(start, end).forEach((src, i) => {
+    const ri = start + i;
+    const el = document.createElement('img');
+    el.src = src; el.alt = '';
+    el.className = 'h-16 w-24 object-cover cursor-pointer rounded opacity-40 hover:opacity-90 transition-all duration-300';
+    if (ri === indexAtual) el.classList.add('ring-1', 'ring-[#C9A84C]', '!opacity-100');
+    el.onclick = () => { indexAtual = ri; atualizarImagem(); };
+    container.appendChild(el);
+  });
+}
+atualizarImagem(false);
+
+/* ── MODAL (com setas) ── */
+function atualizarModalImagem() {
+  const lista = galerias[categoriaAtual];
+  const img = document.getElementById('imgExpandida');
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.src = lista[indexAtual];
+    img.style.opacity = '1';
+  }, 150);
+  document.getElementById('modalCounter').innerText = `${indexAtual + 1} / ${lista.length}`;
+}
+function abrirImagem() {
+  atualizarModalImagem();
+  document.getElementById('modalImg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function fecharImagem() {
+  document.getElementById('modalImg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function fecharSeClickForaImagem(e) {
+  if (e.target === document.getElementById('modalImg')) fecharImagem();
+}
+function modalNextImg(e) {
+  e.stopPropagation();
+  const l = galerias[categoriaAtual];
+  indexAtual = (indexAtual + 1) % l.length;
+  atualizarImagem(false);
+  atualizarModalImagem();
+}
+function modalPrevImg(e) {
+  e.stopPropagation();
+  const l = galerias[categoriaAtual];
+  indexAtual = (indexAtual - 1 + l.length) % l.length;
+  atualizarImagem(false);
+  atualizarModalImagem();
 }
 
-function prevImg(){
-  const lista = galerias[categoriaAtual];
-  indexAtual = (indexAtual - 1 + lista.length) % lista.length;
-  document.getElementById("galeriaImg").src = lista[indexAtual];
+/* Swipe touch para modal */
+let touchStartX = 0;
+document.getElementById('modalImg').addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+document.getElementById('modalImg').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) {
+    if (dx < 0) modalNextImg(e);
+    else         modalPrevImg(e);
+  }
+});
+
+/* Keyboard navigation */
+document.addEventListener('keydown', e => {
+  if (document.getElementById('modalImg').classList.contains('open')) {
+    if (e.key === 'Escape')      fecharImagem();
+    if (e.key === 'ArrowRight')  modalNextImg(e);
+    if (e.key === 'ArrowLeft')   modalPrevImg(e);
+  }
+});
+
+/* ── TOUR (lazy) ── */
+const tourUrls = {
+  1: 'https://my.matterport.com/show/?m=aywZ8V73F9S',
+  2: 'https://my.matterport.com/show/?m=Zbb4BpLFjbS'
+};
+function carregarTour(num) {
+  const ph   = document.getElementById(`tourPlaceholder${num}`);
+  const wrap = document.getElementById(`tourWrapper${num}`);
+  const iframe = document.createElement('iframe');
+  iframe.src = tourUrls[num];
+  iframe.className = 'absolute inset-0 w-full h-full';
+  iframe.allow = 'fullscreen; xr-spatial-tracking';
+  iframe.allowFullscreen = true;
+  iframe.title = `Tour Virtual ${num === 1 ? '143' : '187'}m²`;
+  wrap.appendChild(iframe);
+  ph.style.display = 'none';
 }
+function ativarTour(num) {
+  const other = num === 1 ? 2 : 1;
+  document.getElementById(`tourWrapper${num}`).classList.remove('hidden');
+  document.getElementById(`tourWrapper${other}`).classList.add('hidden');
+  const ab = document.getElementById(`tourBtn${num}`);
+  const ib = document.getElementById(`tourBtn${other}`);
+  ab.style.borderColor = 'var(--gold)'; ab.style.color = 'var(--gold)';
+  ib.style.borderColor = 'rgba(255,255,255,.12)'; ib.style.color = 'rgba(240,235,225,.4)';
+}
+
+/* ── VIDEO INLINE ── */
+function carregarVideoInline() {
+  const wrap = document.getElementById('videoInlineWrapper');
+  const ph   = document.getElementById('videoInlinePlaceholder');
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://www.youtube.com/embed/kIricrJFLYI?autoplay=1&rel=0&modestbranding=1';
+  iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+  iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+  iframe.allowFullscreen = true;
+  iframe.title = 'Infinity Brooklin';
+  wrap.appendChild(iframe);
+  ph.remove();
+}
+
+/* ── FORM → WHATSAPP ── */
+function sendWhats(e) {
+  e.preventDefault();
+  // detecta mobile ou desktop
+  const isMobile = window.innerWidth < 768;
+  const nome      = document.getElementById(isMobile ? 'nome-m' : 'nome-d').value.trim();
+  const tel       = document.getElementById(isMobile ? 'tel-m'  : 'tel-d').value.trim();
+  const interesse = document.getElementById(isMobile ? 'interesse-m' : 'interesse-d').value || 'não informado';
+  const msg = `Olá! Sou ${nome} (${tel}) e tenho interesse no Infinity Brooklin — residência de ${interesse}. Poderia me enviar a apresentação completa?`;
+  window.open('https://wa.me/5511910890052?text=' + encodeURIComponent(msg), '_blank');
+}
+
+/* ── PROGRESS BAR trigger on reveal ── */
+const pbObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const fill = e.target.querySelector('.progress-bar-fill');
+      if (fill) fill.style.width = fill.getAttribute('data-width') + '%';
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.progress-bar-bg').forEach(el => pbObserver.observe(el));
 </script>
 </body>
 </html>
